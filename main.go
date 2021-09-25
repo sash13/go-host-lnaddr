@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/fiatjaf/makeinvoice"
+	"github.com/sash13/makeinvoice"
 	"log"
 	"net/http"
 	"os"
