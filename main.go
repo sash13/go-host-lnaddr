@@ -11,7 +11,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Config struct {
@@ -102,16 +101,18 @@ func handleLNUrlp(config Config) http.HandlerFunc {
 func handleInvoiceCreation(config Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		keys, hasAmount := r.URL.Query()["amount"]
+		amount,  hasAmount  := r.URL.Query()["amount"]
+		comment, hasComment := r.URL.Query()["comment"]
+		invoiceComment		:= ""
 
-		if !hasAmount || len(keys[0]) < 1 {
+		if !hasAmount || len(amount[0]) < 1 {
 			err := getErrorResponse("Mandatory URL Query parameter 'amount' is missing.") 
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(err)
 			return
 		}
 
-		msat, isInt := strconv.Atoi(keys[0])
+		msat, isInt := strconv.Atoi(amount[0])
 		if isInt != nil {
 			err := getErrorResponse("Amount needs to be a number denoting the number of milli satoshis.") 
 			w.WriteHeader(http.StatusBadRequest)
@@ -126,21 +127,27 @@ func handleInvoiceCreation(config Config) http.HandlerFunc {
 			return
 		}
 
+		if hasComment {
+			invoiceComment = comment[0][:]
+		}
+
+		if len(invoiceComment) > config.CommentAllowed {
+			invoiceComment = invoiceComment[:config.CommentAllowed]
+		}
+
 		// parameters ok, creating invoice
 		backend := makeinvoice.LNDParams{
 			Host:     config.RPCHost,
 			Macaroon: config.InvoiceMacaroon,
 		}
 
-		label := fmt.Sprintf("%s: %d sats", strconv.FormatInt(time.Now().Unix(), 16), msat)
 		params := makeinvoice.Params{
 			Msatoshi:    int64(msat),
 			Backend:     backend,
-			Label:       label,
-			Description: config.Metadata,
+			Label:       invoiceComment,
 		}
 
-		h := sha256.Sum256([]byte(params.Description))
+		h := sha256.Sum256([]byte(config.Metadata))
 		params.DescriptionHash = h[:]
 
 		bolt11, err := makeinvoice.MakeInvoice(params)
