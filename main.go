@@ -103,7 +103,7 @@ func handleInvoiceCreation(config Config) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		amount,  hasAmount  := r.URL.Query()["amount"]
 		comment, hasComment := r.URL.Query()["comment"]
-		invoiceComment		:= ""
+		invoiceComment      := ""
 
 		if !hasAmount || len(amount[0]) < 1 {
 			err := getErrorResponse("Mandatory URL Query parameter 'amount' is missing.") 
@@ -163,8 +163,8 @@ func handleInvoiceCreation(config Config) http.HandlerFunc {
 			Pr:     bolt11,
 			Routes: make([]string, 0, 0),
 			SuccessAction:  &SuccessAction{
-							Tag:     "message",
-							Message: config.SuccessMessage,
+						Tag:     "message",
+						Message: config.SuccessMessage,
 					},
 		}
 		w.WriteHeader(http.StatusCreated)
