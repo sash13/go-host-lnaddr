@@ -1,4 +1,4 @@
-# ⚡🖥️👾 Host your own Lightning Address(currently on LND only)
+# ⚡🖥️👾 Host your own Lightning Address on LND
 Lighting Wallets like BlueWallet, Blixt and [many more](https://github.com/andrerfneves/lightning-address/blob/master/README.md#wallets-supported) allow us to send sats to [Lighting Addresses](https://lightningaddress.com) like tips@allmysats.com. We can hence pay without scanning the QR code of an invoice.
 
 ## Pre-requisites
@@ -33,6 +33,8 @@ cd go-host-lnaddr && go build main.go
 ## TODO
 - [ ] Support images as metadata
 - [x] Host multiple receipients under the same domain
+- [ ] Config should provide paths to invoice.macaroon rather than the hexified macaroon itself
+- [ ] Dump this list into github issues lol
 
 ## Notes
 This stuff is experimental. I appreciate your comments and if you have questions please feel free to reach out to hieblmi@protonmail.com.
